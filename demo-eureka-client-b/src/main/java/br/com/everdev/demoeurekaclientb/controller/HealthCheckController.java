@@ -19,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class HealthCheckController {
@@ -52,10 +53,10 @@ public class HealthCheckController {
 
         List<InstanceInfo> instances = eurekaClient.getInstancesById(name);
 
-        InstanceInfo instance = instances.getFirst();
+        Optional<InstanceInfo> instance = instances.stream().findFirst();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("http://"+instance.getIPAddr() + ":" + instance.getPort()+"/receiveCall/"+appName))
+                .uri(new URI("http://"+instance.get().getIPAddr() + ":" + instance.get().getPort()+"/receiveCall/"+appName))
                 .POST(HttpRequest.BodyPublishers.ofString(message))
                 .build();
         try {
