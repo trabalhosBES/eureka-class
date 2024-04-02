@@ -1,18 +1,17 @@
-package br.com.everdev.demoeurekaclienta.config;
+package br.com.everdev.demoeurekaclientb.config;
 
-import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SwaggerConfig {
+public class SpringDocConfig {
 
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-                .group("spring")
-                .packagesToScan("br.com.everdev.demoeurekaclienta.controller")
+                .group("public")
+                .packagesToScan("br.com.everdev.demoeurekaclientb.controller")
                 .build();
     }
 }
-

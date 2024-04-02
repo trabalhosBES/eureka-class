@@ -15,13 +15,8 @@ eureka:
 
 springdoc:
   api-docs:
-      path: /api-docs
+    path: /api-docs
   swagger-ui:
-      path: /swagger-ui.html
-
-logging:
-  level:
-    org:
-      springdoc: DEBUG
+    path: /swagger-ui.html
 
 
