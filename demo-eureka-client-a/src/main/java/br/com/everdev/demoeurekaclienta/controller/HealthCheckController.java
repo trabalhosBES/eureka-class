@@ -75,9 +75,9 @@ public class HealthCheckController {
 
     @GetMapping("/call-client-b")
     public String callClientB() {
-        List<InstanceInfo> instances = eurekaClient.getApplication(clientBServiceId).getInstances();
+        InstanceInfo instance = eurekaClient.getApplication(clientBServiceId).getInstances().getFirst();
 
-        String baseUrl = instances.get(0).getHomePageUrl();
+        String baseUrl = instance.getHomePageUrl();
 
         String specificEndpoint = "health";
 
