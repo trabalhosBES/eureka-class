@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +29,11 @@ public class HealthCheckController {
 
     @Value("${spring.application.name}")
     private String appName;
+
+    @Value("${client.service.id}")
+    private String clientBServiceId;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/health")
     public String healthy() {
@@ -66,4 +72,20 @@ public class HealthCheckController {
             throw new RuntimeException(e);
         }
     }
+
+    @GetMapping("/call-client-b")
+    public String callClientB() {
+        List<InstanceInfo> instances = eurekaClient.getApplication(clientBServiceId).getInstances();
+
+        String baseUrl = instances.get(0).getHomePageUrl();
+
+        String specificEndpoint = "health";
+
+        String url = baseUrl + specificEndpoint;
+
+        var clientBResponse = restTemplate.getForObject(url, String.class);
+
+        return clientBResponse;
+    }
+
 }
