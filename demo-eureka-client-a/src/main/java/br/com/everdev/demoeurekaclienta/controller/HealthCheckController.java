@@ -1,5 +1,6 @@
 package br.com.everdev.demoeurekaclienta.controller;
 
+import br.com.everdev.demoeurekaclienta.util.Constants;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Applications;
@@ -73,19 +74,28 @@ public class HealthCheckController {
         }
     }
 
-    @GetMapping("/call-client-b")
-    public String callClientB() {
+    @GetMapping("/sum-aleatory-numbers")
+    public Integer callClientB() {
+
+        try{
+
+            var url = getClientBCompleteUrlByEndpoint(Constants.ClientBEndPoint.SUM);
+            var clientBResponse = restTemplate.getForObject(url, Integer.class);
+
+            return clientBResponse;
+
+        } catch (Exception ex){
+            return -1;
+        }
+
+    }
+
+    private String getClientBCompleteUrlByEndpoint(String endPoint){
         InstanceInfo instance = eurekaClient.getApplication(clientBServiceId).getInstances().getFirst();
 
         String baseUrl = instance.getHomePageUrl();
 
-        String specificEndpoint = "health";
-
-        String url = baseUrl + specificEndpoint;
-
-        var clientBResponse = restTemplate.getForObject(url, String.class);
-
-        return clientBResponse;
+        return baseUrl + endPoint;
     }
 
 }

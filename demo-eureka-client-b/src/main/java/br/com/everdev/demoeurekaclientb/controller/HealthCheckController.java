@@ -1,5 +1,6 @@
 package br.com.everdev.demoeurekaclientb.controller;
 
+import br.com.everdev.demoeurekaclientb.util.Constants;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Applications;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @RestController
 public class HealthCheckController {
@@ -30,6 +33,12 @@ public class HealthCheckController {
 
     @Value("${spring.application.name}")
     private String appName;
+
+    @Value("${client.service.id}")
+    private String clientCServiceId;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+    private static Random random = new Random();
 
     @GetMapping("/health")
     public String healthy() {
@@ -68,4 +77,31 @@ public class HealthCheckController {
             throw new RuntimeException(e);
         }
     }
+
+    @GetMapping("/only-sum")
+    public Integer getRandomNumber() {
+
+        try {
+            var url = getClientCCompleteUrlByEndpoint(Constants.ClientCEndPoint.RANDOM_NUMBER);
+            var clientBResponse = restTemplate.getForObject(url, Integer.class);
+            int numberGenerated = random.nextInt(1,100);
+
+            return numberGenerated + clientBResponse.intValue();
+        } catch (Exception ex){
+            return -2;
+        }
+
+
+    }
+
+    private String getClientCCompleteUrlByEndpoint(String endPoint){
+
+        InstanceInfo instance = eurekaClient.getApplication(clientCServiceId).getInstances().getFirst();
+
+        String baseUrl = instance.getHomePageUrl();
+
+        return baseUrl + endPoint;
+
+    }
+
 }

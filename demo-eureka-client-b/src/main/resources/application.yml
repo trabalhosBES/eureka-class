@@ -19,3 +19,8 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+#Client C
+client:
+  service:
+    id: demo-eureka-client-c

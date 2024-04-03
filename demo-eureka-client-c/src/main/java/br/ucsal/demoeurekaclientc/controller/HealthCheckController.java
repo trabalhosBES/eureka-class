@@ -1,5 +1,6 @@
 package br.ucsal.demoeurekaclientc.controller;
 
+import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +24,9 @@ public class HealthCheckController {
     private static Random random = new Random();
 
     @GetMapping("/random-number")
-    public int getRandomNumber() {
+    public Integer getRandomNumber() {
 
-        int number = random.nextInt(1,100);
-        return number;
+        return random.nextInt(1,100);
 
     }
 
