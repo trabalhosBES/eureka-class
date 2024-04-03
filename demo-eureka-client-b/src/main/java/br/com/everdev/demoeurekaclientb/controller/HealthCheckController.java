@@ -1,5 +1,6 @@
 package br.com.everdev.demoeurekaclientb.controller;
 
+import br.com.everdev.demoeurekaclientb.infra.exception.ConnectionNotEstablishedException;
 import br.com.everdev.demoeurekaclientb.util.Constants;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
@@ -87,18 +88,21 @@ public class HealthCheckController {
             int numberGenerated = random.nextInt(1,100);
 
             return numberGenerated + clientBResponse.intValue();
-        } catch (Exception ex){
-            return -2;
+
+        } catch (ConnectionNotEstablishedException ex){
+            return Integer.valueOf(ex.toString());
         }
 
 
     }
 
-    private String getClientCCompleteUrlByEndpoint(String endPoint){
+    private String getClientCCompleteUrlByEndpoint(String endPoint) throws ConnectionNotEstablishedException {
 
-        InstanceInfo instance = eurekaClient.getApplication(clientCServiceId).getInstances().getFirst();
+        Optional<InstanceInfo> instance = Optional.of(
+                eurekaClient.getApplication(clientCServiceId).getInstances().stream().findFirst()
+        ).orElseThrow(() -> new ConnectionNotEstablishedException("Not found"));
 
-        String baseUrl = instance.getHomePageUrl();
+        String baseUrl = instance.get().getHomePageUrl();
 
         return baseUrl + endPoint;
 
